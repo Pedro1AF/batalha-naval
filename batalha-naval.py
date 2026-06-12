@@ -1,4 +1,8 @@
 import random
+
+global navioAbatidoJ
+global navioAbatidoC
+
 navioAbatidoJ = 0
 navioAbatidoC = 0
 #Abaixo são todas as funções do jogo
@@ -36,8 +40,7 @@ def frotaC(mar):
 marComputador = frotaC(10)
 #-------
 #Abaixo são as duas funçoes para exibir os tabuleiros com as cordenadas das linhas e colunas respectivas
-def exibirTabJogador(tabJ):
-    print("\nTabuleiro Jogador\n")
+def exibirTab(tab):
     for linha in range(11):
         if linha == 0:
             print(f"  X\nY .{1:2}", end="| ")
@@ -46,20 +49,7 @@ def exibirTabJogador(tabJ):
         else:
             print(f"{linha:2}", end=" ")
             for coluna in range(10):
-                print(tabJ[linha - 1][coluna], end=" ")
-        print()
-#-------
-def exibirTabComp(tabC):
-    print("\nTabuleiro Computador\n")
-    for linha in range(11):
-        if linha == 0:
-            print(f"  X\nY .{1:2}", end="| ")
-            for col1 in range(2, 11):
-                print(f"{col1:1}|", end=" ")
-        else:
-            print(f"{linha:2}", end=" ")
-            for coluna in range(10):
-                print(tabuleiroC[linha - 1][coluna], end=" ")
+                print(tab[linha - 1][coluna], end=" ")
         print()
 #-------
 #Agora aqui abaixo é o momento de escolha das posições das embarcações
@@ -101,17 +91,16 @@ def posicionarFrotaJ():
             print("Todas as embarcações foram alocadas, se prerare para a batalha!")
             break
 #-------
-print("O computador vai escolher as posições que deseja agora!")
 ##-------
 ##Agora o momento da maquina escolhes as suas posiçoes
-def poscionarNavioC():
+def posicionarNavioC():
    for i in range(0, 5):
        linhaComp = random.randint(0, 9)
        colunaComp = random.randint(0, 9)
        if marComputador[linhaComp][colunaComp] == "🌊":
            marComputador[linhaComp][colunaComp] = "🛥️ "
        else:
-           i -= 1
+           continue
 #-------
 #Nesta seção está o codígo onde os disparos vao ser realizados pelos jogadores
 def disparoJ(X, Y):
@@ -123,8 +112,14 @@ def disparoJ(X, Y):
     mensagemErro = random.choice(erroJogador)
     if marComputador[X][Y] == "🛥️ ":
         print("Parabens Jogador você atingiu o alvo!")
+        marComputador[X][Y] = "X"
         navioAbatidoJ += 1
+    elif marComputador[X][Y] == "X":
+        print("Voce selecionou o mesma posição novamente escolha outra")
+    elif marComputador[X][Y] == "O":
+        print("Esta posição ja foi selecionada e esta vazia")
     else:
+        marComputador[X][Y] = "O"
         print(mensagemErro)
 #-------
 def disparoC(X, Y):
@@ -135,25 +130,45 @@ def disparoC(X, Y):
     erroComp = random.choice(erroComputador)
     if marJogador[X][Y] == "🛥️ ":
         print("O computador acertou em cheio")
+        marJogador[X][Y] = "X"
         navioAbatidoC += 1
+    elif marJogador[X][Y] == "X":
+        print("Voce selecionou o mesma posição novamente escolha outra")
+    elif marJogador[X][Y] == "O":
+        print("Esta posição ja foi selecionada e esta vazia")
     else:
+        marJogador[X][Y] = "O"
         print(erroComp)
 #-------
 
 
-
-print(exibirTabJogador(tabuleiroJ))
+print("\nTabuleiro Jogador\n")
+print(exibirTab(tabuleiroJ))
+print("\nTabuleiro COmputador\n")
+print(exibirTab(tabuleiroC))
 posicionarFrotaJ()
+posicionarNavioC()
 print("Agora observe como suas tropas ficaram alocadas no mar")
-print(exibirTabJogador(marJogador))
+print(exibirTab(marJogador))
+print(exibirTab(marComputador))
 
 while True:
     print("Jogador agora voce vai realizar o disparo")
-    colunaX = int(input("Insira a cordenada X que deseja realizar o disparo: "))
-    linhaY = int(input("Insira a cordenada Y que deseja realizar o disparo: "))
-    cordenada = colunaX, linhaY
-    localAcerto = disparoJ(cordenada)
-    print(localAcerto)
+    while True:
+            colunaX = input("Insira a cordenada X que deseja realizar o disparo: ")
+            linhaY = input("Insira a cordenada Y que deseja realizar o disparo: ")
+            if linhaY.isdigit() and colunaX.isdigit():
+                    numY = int(linhaY) - 1
+                    numX = int(colunaX) - 1
+                    if 0 <= numX <= 9 and 0 <= numY <= 9:
+                        localAcerto = disparoJ(numX, numY)
+                        print(localAcerto)
+                        break
+                    else:
+                        print("Por favor inisira um numero entre 1 e 10")
+            else:
+                print("Entrada inválida. Por favor, digite apenas números.")
+            
     #-------
     print("Agora o computador vai realizar o disparo!")
     escolhaXComp = random.randint(0, 9)
